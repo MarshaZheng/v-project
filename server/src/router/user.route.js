@@ -9,5 +9,4 @@ const router = new Router({ prefix: '/users' })
 
 // 登录接口
 router.post('/login', login)
-
 module.exports = router
