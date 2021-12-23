@@ -8,7 +8,7 @@ const {
     MYSQL_DB,
 } = require('../config/config.default')
 
-const seq = new Sequelize(MYSQL_DB, MYSQL_USER, MYSQL_PWD, {
+const seq = new Sequelize(MYSQL_DB, 'root', '123456', {
     host: MYSQL_HOST,
     dialect: 'mysql',
 })
