@@ -1,8 +1,8 @@
 const Router = require('koa-router')
 
-const { login } = require('../controller/user.controller')
+const { login } = require('../controller/patient.controller')
 
-const router = new Router({ prefix: '/users' })
+const router = new Router({ prefix: '/patient' })
 
 // 注册接口
 // router.post('/register', register)

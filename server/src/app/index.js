@@ -1,11 +1,12 @@
 const Koa = require('koa')
 const KoaBody = require('koa-body')
 
-const userRouter = require('../router/user.route')
-
+const patientRouter = require('../router/patient.route')
+const physicianRouter = require('../router/physician.route')
 const app = new Koa()
 
 app.use(KoaBody())
-app.use(userRouter.routes())
+app.use(patientRouter.routes())
+app.use(physicianRouter.routes())
 
 module.exports = app
