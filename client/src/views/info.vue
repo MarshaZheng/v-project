@@ -155,7 +155,7 @@ export default {
     onSubmit() {
         var url=null
         if(this.form.type=='PATIENT_ID'){
-          url='/api/patient/login'
+          url='/api/patient/fetchData'
         }else{
           url='/api/physician/fetchData'
         }

@@ -3,21 +3,35 @@ const Patient = require('../model/patient_info.model')
 
 class PatientController {
     async fetchData(ctx, next) {
-        // 1. 获取数据
-        // console.log(ctx.request.body)
-        const { id, type } = ctx.request.body
+        const { id, name, type } = ctx.request.body
+        console.log(id, name, type)
+        var res = null
             // 2. 操作数据库
-            // const res = await createUser(user_name, password)
-            // console.log(res)
-            // 3. 返回结果
-        ctx.body = {
-            code: 0,
-            message: '用户注册成功',
-            result: {
-                id: id,
-                type: type,
-            },
+        if (id !== '') {
+            if (name === '') {
+                res = await Patient.findAll({ where: { id: id } })
+            } else {
+                res = await Patient.findAll({ where: { id: id, name: name } })
+            }
+        } else if (name !== '') {
+            res = await Patient.findAll({ where: { name: name } })
+        } else {
+            res = await Patient.findAll()
         }
+        // const res = await User.findAll()
+        // console.log(res)
+        // 3. 返回结果
+        console.log(res)
+        if (res) {
+            ctx.body = {
+                code: 0,
+                message: "数据查询成功",
+                data: {
+                    nodeData: res
+                },
+            }
+        }
+
     }
 
     async login(ctx, next) {
