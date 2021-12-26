@@ -15,5 +15,17 @@ export default new Router({
         component: () =>
             import ('@/views/info')
             // hidden: true
+    }, {
+        path: '/node',
+        name: 'node',
+        component: () =>
+            import ('@/views/node')
+            // hidden: true
+    }, , {
+        path: '/group',
+        name: 'group',
+        component: () =>
+            import ('@/views/group')
+            // hidden: true
     }, ]
 })

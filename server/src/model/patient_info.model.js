@@ -14,6 +14,8 @@ const Patient = seq.define('patient_info', {
     sci_card_no: DataTypes.STRING,
     sci_card_identified: DataTypes.STRING,
     address: DataTypes.STRING,
+    group_id: DataTypes.INTEGER,
+    record_count: DataTypes.INTEGER
 }, {
     freezeTableName: true, // 默认false修改表名为复数，true不修改表名，与数据库表名同步    
     timestamps: false

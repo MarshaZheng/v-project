@@ -1,22 +1,22 @@
 // const { getUserInfo } = require('../service/user.service')
 const Patient = require('../model/patient_info.model')
-
+const Record = require('../model/medical_record.model')
 class PatientController {
     async fetchData(ctx, next) {
         const { id, name, type } = ctx.request.body
         console.log(id, name, type)
         var res = null
+        var record = null
             // 2. 操作数据库
         if (id !== '') {
-            if (name === '') {
-                res = await Patient.findAll({ where: { id: id } })
-            } else {
-                res = await Patient.findAll({ where: { id: id, name: name } })
-            }
+            record = await Record.findAll({ where: { PATIENT_ID: id } })
+            res = await Patient.findAll({ where: { id: id } })
         } else if (name !== '') {
             res = await Patient.findAll({ where: { name: name } })
+            record = await Record.findAll({ where: { PATIENT_NAME: name } })
         } else {
             res = await Patient.findAll()
+            record = await Record.findAll()
         }
         // const res = await User.findAll()
         // console.log(res)
@@ -27,7 +27,8 @@ class PatientController {
                 code: 0,
                 message: "数据查询成功",
                 data: {
-                    nodeData: res
+                    nodeData: res,
+                    recordData: record
                 },
             }
         }
