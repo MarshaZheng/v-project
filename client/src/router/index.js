@@ -21,11 +21,17 @@ export default new Router({
         component: () =>
             import ('@/views/node')
             // hidden: true
-    }, , {
+    }, {
         path: '/group',
         name: 'group',
         component: () =>
             import ('@/views/group')
             // hidden: true
-    }, ]
+    }, , {
+        path: '/path',
+        name: 'path',
+        component: () =>
+            import ('@/views/path')
+            // hidden: true
+    }]
 })
