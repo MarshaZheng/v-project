@@ -11,8 +11,8 @@ const Patient = seq.define('patient_info', {
     gender: DataTypes.STRING,
     dob: DataTypes.STRING,
     company: DataTypes.STRING,
-    sci_card_no: DataTypes.STRING,
-    sci_card_identified: DataTypes.STRING,
+    id_number: DataTypes.STRING,
+    id_type: DataTypes.STRING,
     address: DataTypes.STRING,
     group_id: DataTypes.INTEGER,
     record_count: DataTypes.INTEGER
