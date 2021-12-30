@@ -1,40 +1,6 @@
 <template>
 
   <div class="app-container">
-    <div class="crumbs">
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item>
-                <font color='#409EFF'>查询条件</font>
-            </el-breadcrumb-item>
-        </el-breadcrumb>
-    </div>
-    <div class="handle-box">
-      <el-form :inline="true"  class="demo-form-inline">
-      <el-form-item>&ensp;</el-form-item>
-        <el-form ref="form" :model="form">
-          <el-form-item label="节点类型">
-            <el-select v-model="form.type" placeholder="please enter">
-              <el-option label="病人" value="PATIENT_ID" />
-              <el-option label="医生" value="PHYSICIAN_ID" />
-              <el-option label="科室" value="DEPT_ID" />
-              <el-option label="医院" value="HOSPITAL_ID" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="节点ID">
-            <el-input v-model="form.id" />
-          </el-form-item>
-          <el-form-item label="节点名称">
-            <el-input v-model="form.name" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">搜索</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button  @click="clearData">清空条件</el-button>
-          </el-form-item>
-        </el-form>
-        </el-form>
-     </div>
     <div class="crumbs" v-if="this.nodeData!==null">
         <el-breadcrumb separator="/">
             <el-breadcrumb-item>
@@ -55,7 +21,7 @@
       </el-table-column>
       <el-table-column align="center" label="性别">
         <template slot-scope="scope">
-          {{ scope.row.sex }}
+          {{ scope.row.gender }}
         </template>
       </el-table-column>
        <el-table-column align="center" label="出生日期">
@@ -136,100 +102,17 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table :data="nodeData" v-if="this.form.type=='HOSPITAL_ID'&&this.nodeData!==null" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column align="center" label="节点id">
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="节点名称">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="级别">
-        <template slot-scope="scope">
-          {{ scope.row.p_level }}
-        </template>
-      </el-table-column>
-       <el-table-column align="center" label="所属地区">
-        <template slot-scope="scope">
-          {{ scope.row.area_id}}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="标志">
-        <template slot-scope="scope">
-          {{ scope.row.flag }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="装在时间">
-        <template slot-scope="scope">
-          {{ scope.row.load_date }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="定点基层类型">
-        <template slot-scope="scope">
-          {{ scope.row.h_type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="收费类别">
-        <template slot-scope="scope">
-          {{ scope.row.charge_type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="经度">
-        <template slot-scope="scope">
-          {{ scope.row.longitude }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="纬度">
-        <template slot-scope="scope">
-          {{ scope.row.latitude }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" @click="toInfo(scope.row)" >确认</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
     <br/>
-    <div class="crumbs" v-if="this.record!==null">
+    <div class="crumbs">
         <el-breadcrumb separator="/">
             <el-breadcrumb-item>
                 <font color='#409EFF'>节点就诊信息</font>
             </el-breadcrumb-item>
         </el-breadcrumb>
     </div><br/>
-    <div class="handle-box" v-if="this.record!==null">
-      <el-form :inline="true"  class="demo-form-inline">
-        <el-form ref="form" :model="filterForm">
-          <el-form-item label="就诊时间" >
-              <el-date-picker size="mini"
-                v-model="filterForm.TIME"
-                type="date"
-                placeholder="选择日期">
-              </el-date-picker>
-          </el-form-item>
-          <el-form-item label="就诊医院" >
-            <el-input size="mini" v-model="filterForm.HOSPITAL_ID" />
-          </el-form-item>
-          <el-form-item label="就诊医生">
-            <el-input  size="mini" v-model="filterForm.PHYSICIAN_ID" />
-          </el-form-item>
-          <el-form-item label="就诊科室" >
-            <el-input size="mini" v-model="filterForm.DEPT_ID" />
-          </el-form-item>
-          <el-form-item label="就诊患者">
-            <el-input size="mini" v-model="filterForm.PATIENT_ID" />
-          </el-form-item>
-        </el-form>
-        </el-form>
-     </div>
-
-    <el-table :data="recordResult" v-if="this.record!==null"  @selection-change="handleSelectionChange" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column type="selection" width="50">
-         </el-table-column>
+<el-tabs v-model="activeName1" @tab-click="handleClick" tab-position="top">
+        <el-tab-pane label="节点1" name="first" >
+    <el-table :data="record1" border class="table" ref="multipleTable" header-cell-class-name="table-header">
       <el-table-column align="center" label="就诊时间">
         <template slot-scope="scope">
           {{ scope.row.TIME }}
@@ -286,47 +169,182 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="handle-box" v-if="this.record!=null">
-      <el-form :inline="true"  class="demo-form-inline">
-      <el-form-item>&ensp;</el-form-item>
-        <el-form ref="form" :model="algorithmForm">
-          <el-form-item label="关联探索对象类型">
-            <el-select v-model="algorithmForm.type" placeholder="please select">
-              <el-option label="病人" value="PATIENT_ID" />
-              <el-option label="医生" value="PHYSICIAN_ID" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="运行算法">
-            <el-select v-model="algorithmForm.algorithm" placeholder="please select">
-              <el-option label="节点相似性算法" value="1" />
-              <el-option label="社区发现算法" value="2" />
-              <el-option label="关联路径算法" value="3" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="主节点id">
-            <el-input v-model="algorithmForm.node_id" :disabled="algorithmForm.algorithm!=='1'" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="success" @click="runAlgorithm" >运行算法</el-button>
-          </el-form-item>
-          
-        </el-form>
-        </el-form>
-     </div><br/>
+        </el-tab-pane>
+        <el-tab-pane label="节点2" name="second" >
+        <el-table :data="record2" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+      <el-table-column align="center" label="就诊时间">
+        <template slot-scope="scope">
+          {{ scope.row.TIME }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="病人ID">
+        <template slot-scope="scope">
+          {{ scope.row.PATIENT_ID }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="病人姓名">
+        <template slot-scope="scope">
+          {{ scope.row.PATIENT_NAME }}
+          </template>
+      </el-table-column>
+      <el-table-column align="center" label="医院ID">
+        <template slot-scope="scope">
+          {{ scope.row.HOSPITAL_ID }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="医院名称">
+        <template slot-scope="scope">
+          {{ scope.row.HOSPITAL_NAME }}
+        </template>
+      </el-table-column>
+       <el-table-column align="center" label="医生ID">
+        <template slot-scope="scope">
+          {{ scope.row.PHYSICIAN_ID }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="医生姓名">
+        <template slot-scope="scope">
+          {{ scope.row.PHYSICIAN_NAME }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="科室ID">
+        <template slot-scope="scope">
+          {{ scope.row.DEPT_ID }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="科室名称">
+        <template slot-scope="scope">
+          {{ scope.row.DEPT_NAME }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="入院">
+        <template slot-scope="scope">
+          {{ scope.row.ADMISSION_DISEASE_ID }}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="出院">
+        <template slot-scope="scope">
+          {{ scope.row.DISCHARGE_DISEASE_ID }}
+        </template>
+      </el-table-column>
+        </el-table>
+        </el-tab-pane>
+</el-tabs>
+    <br/>
   <div class="crumbs" v-if="this.graph_data!==null">
         <el-breadcrumb separator="/">
             <el-breadcrumb-item>
-                <font color='#409EFF'>可视化视图</font>
+                <font color='#409EFF'>关联路径挖掘结果</font>
             </el-breadcrumb-item>
         </el-breadcrumb>
     </div><br/>
-    <template v-if="this.graph_data!==null">
+    <el-tabs v-model="activeName" @tab-click="handleClick" tab-position="top">
+        <el-tab-pane label="列表视图" name="first" >
+        <div class="handle-box" >
+            <el-form :inline="true"  class="demo-form-inline">
+                <el-form ref="form" :model="filterForm">
+                    <el-form-item label="n阶关系">
+                        <el-select v-model="filterForm.step" placeholder="please enter">
+                            <el-option label="1阶关系" value="step1" />
+                            <el-option label="2阶关系" value="step2" />
+                            <el-option label="3阶关系" value="step3" />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="中间节点1类型">
+                        <el-select v-model="filterForm.type1" placeholder="please enter">
+                            <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                            <el-option label="DEPT_ID" value="DEPT_ID" />
+                            <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="中间节点2类型">
+                        <el-select v-model="filterForm.type2" placeholder="please enter">
+                            <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                            <el-option label="DEPT_ID" value="DEPT_ID" />
+                            <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="中间节点3类型">
+                        <el-select v-model="filterForm.type3" placeholder="please enter">
+                            <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                            <el-option label="DEPT_ID" value="DEPT_ID" />
+                            <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                        </el-select>
+                    </el-form-item>
+                </el-form>
+                </el-form>
+            </div>
+        <el-table :data="pathData" border class="table" ref="multipleTable" header-cell-class-name="table-header">
+            <el-table-column align="center" label="n阶关系">
+            <template slot-scope="scope">
+              {{ scope.row.step }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="中间节点类型">
+            <template slot-scope="scope">
+              {{ scope.row.internal_node_type }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="中间节点1">
+            <template slot-scope="scope">
+              {{ scope.row.internal_node1 }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="关联节点1">
+            <template slot-scope="scope">
+              {{ scope.row.internal_patient1 }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="中间节点2">
+            <template slot-scope="scope">
+              {{ scope.row.internal_node2 }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="关联节点2">
+            <template slot-scope="scope">
+              {{ scope.row.internal_patient2 }}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="中间节点3">
+            <template slot-scope="scope">
+              {{ scope.row.internal_node3 }}
+            </template>
+          </el-table-column>
+          </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="可视化视图" name="second">
+        <template v-if="this.graph_data!==null">
           <div>
             <el-row type="flex" class="row-bg" justify="end">
               <el-col :span=18> 
               <template>
                 <div>
                   <div ref="myPage" style="height:calc(100vh - 50px);" @click="isShowNodeMenuPanel = false">
+                    <div class="handle-box" >
+                        <el-form :inline="true"  class="demo-form-inline">
+                            <el-form ref="form" :model="filterForm">
+                                <el-form-item label="n阶关系">
+                                    <el-select v-model="filterForm.step" placeholder="please enter">
+                                        <el-option label="1阶关系" value="step1" />
+                                        <el-option label="2阶关系" value="step2" />
+                                        <el-option label="3阶关系" value="step3" />
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="中间节点类型">
+                                    <el-select v-model="filterForm.type1" placeholder="please enter">
+                                        <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                                        <el-option label="DEPT_ID" value="DEPT_ID" />
+                                        <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                                        <el-option label="HOSPITAL" value="HOSPITAL" />
+                                    </el-select>
+                                </el-form-item>
+                                
+                            </el-form>
+                            </el-form>
+                    </div>
                       <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >
                       <div slot="node" slot-scope="{node}">
                         <div style="height:64px;line-height: 64px;border-radius: 32px;cursor: pointer;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
@@ -336,7 +354,8 @@
                   </div>
                   <div v-show="isShowNodeMenuPanel" :style="{left: nodeMenuPanelPosition.x + 'px', top: nodeMenuPanelPosition.y + 'px' }" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
                     <div style="line-height: 25px;padding-left: 10px;color: #888888;font-size: 12px;">对这个节点进行操作：</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('1')">查看信息</div>
+                    <div class="c-node-menu-item" @click.stop="doAction('1')">跳转节点详情</div>
+                    <div class="c-node-menu-item" @click.stop="doAction('6')">展开关联节点</div>
                     <div class="c-node-menu-item" @click.stop="doAction('2')">节点相似性探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('3')">社区发现探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('4')">关联路径探索</div>
@@ -418,12 +437,13 @@
             </el-row>
           </div>
         </template>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,getHospitalList,getDeptList} from '@/api/backend'
-
+import {getPatientList,getPhysicianList,pathAlgorithm} from '@/api/backend'
 import SeeksRelationGraph from 'relation-graph'
 
 
@@ -435,6 +455,7 @@ export default {
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
+      activeName1:'first',
       activeName: 'first',
       currentNode: null,
       form: {
@@ -443,20 +464,20 @@ export default {
         name:'',
       },
       nodeData:null,
-      record:null,
-      recordResult:[],
-      filterForm:{
-        TIME:'',
-        HOSPITAL_ID:'',
-        PHYSICIAN_ID:'',
-        PATIENT_ID:'',
-        DEPT_ID:''
-      },
+      record1:null,
+      record2:null,
+      pathData:null,
       algorithmForm:{
         multipleSelection: [],
         type:'',
         algorithm:'',
         node_id:''
+      },
+      filterForm:{
+          step:'',
+          type1:'',
+          type2:'',
+          type3:''
       },
       infoNodeData:{
         node_type:'',
@@ -487,33 +508,35 @@ export default {
         id_type:''
       },
       graphOptions: {
-          "backgrounImage": "http://ai-mark.cn/images/ai-mark-desc.png",
-          "backgrounImageNoRepeat": true,
-          "layouts": [
+        "backgrounImage": "http://ai-mark.cn/images/ai-mark-desc.png",
+        "backgrounImageNoRepeat": true,
+        "layouts": [
             {
-              "label": "中心",
-              "layoutName": "force",
-              "layoutClassName": "seeks-layout-center",
-              "defaultExpandHolderPosition": "hide",
-              "defaultJunctionPoint": "border"
+            "label": "中心",
+            "layoutName": "tree",
+            "layoutClassName": "seeks-layout-center",
+            "defaultJunctionPoint": "border",
+            "defaultNodeShape": 0,
+            "defaultLineShape": 1,
+            "min_per_width": "100"
             }
-          ],
-          "defaultLineMarker": {
+        ],
+        "defaultLineMarker": {
             "markerWidth": 12,
             "markerHeight": 12,
             "refX": 6,
             "refY": 6,
             "data": "M2,2 L10,6 L2,10 L6,6 L2,2"
-          },
-          "allowShowMiniToolBar": true,
-          "allowSwitchLineShape": true,
-          "allowSwitchJunctionPoint": true,
-          "allowShowMiniView": false,
-          "isMoveByParentNode": true,
-          "defaultNodeShape": 0,
-          "disableZoom": false,
-          "defaultExpandHolderPosition": "bottom"
-      },
+        },
+        
+        "defaultNodeShape": 1,
+        "allowSwitchLineShape": true,
+        "allowSwitchJunctionPoint": true,
+        "isMoveByParentNode": true,
+        "defaultNodeWidth": "80",
+        "defaultNodeHeight": "40",
+        "hideNodeContentByZoom": true
+        },
        graph_data:{
          rootId:'',
          nodes:[],
@@ -522,140 +545,56 @@ export default {
     }
   },
   created() {
+    console.log('1')
     this.getParams()
   },
   watch:{
     '$route': 'getParams',
-    filterForm:{
-      handler(val, oldVal){
-        if(val){
-        // 如果筛选条件全为空，查全部；否则按条件筛选
-          var objIsEmpty =  this.filterForm.PHYSICIAN_ID == '' && this.filterForm.HOSPITAL_ID == '' && this.filterForm.PATIENT_ID == '' && this.filterForm.DEPT_ID == ''
-          if(objIsEmpty){
-            this.recordResult = this.record
-          } else {
-          // /拿到有值的参数
-            let tempFilter = {};
-            for(var key in this.filterForm) {
-                if(typeof(this.filterForm[key]) != "undefined" && typeof(this.filterForm[key]) != "null" && this.filterForm[key] != null && this.filterForm[key] != "") {
-                tempFilter[key] = this.filterForm[key];
-            }
-          }
-          // console.log(tempFilter,'输出tempFilter')
-          this.recordResult = this.record.filter((item) => {
-            let flag = false;
-            for(key in tempFilter) {
-              console.log(key,'输出key',this.filterForm[key])
-              if(item[key].toString().indexOf(tempFilter[key].toString()) >= 0) {
-                flag = true;
-              } else {
-                flag = false;
-                break;
-              }
-            }
-            if(flag) {
-              return item;
-            }
-          }
-        );
-        console.log(this.result,'输出筛选结果')
-      }
-    }
-  },
-  deep:true
-}
   },
   mounted() {
-     
+    this.getParams()
    },
   methods: { 
-    handleSelectionChange(val) {
-        this.algorithmForm.multipleSelection = val
-        console.log('algorithm form:',this.algorithmForm)
-      },
-    onSubmit() {
-        if(this.form.type=='PATIENT_ID'){
-           getPatientList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                this.recordResult = this.record
-                this.graph_data = response.data.data.graphData
-                console.log('nodedata',this.nodeData)
-                console.log('graphdata',this.graph_data)
+
+    getParams(){
+      console.log('before get')
+        // 取到路由带过来的参数
+      const nodes = this.$route.query.nodes
+      this.form.type = this.$route.query.type
+      var alform = { nodes:nodes, type:this.form.type}
+      // 将数据放在当前组件的数据内
+      if(this.form.type===''){
+         this.$notify({
+            title: '提示',
+            message: '未传入主节点信息',
+            type: 'error'
+          })
+      }else{
+        if(this.form.type==='PATIENT_ID'){
+            pathAlgorithm(alform).then((res)=>{
+                console.info('res.data',res.data)
+                this.nodeData = res.data.data.nodeData
+                this.record1 = res.data.data.recordData1
+                this.record2= res.data.data.recordData2
+                this.pathData=res.data.data.pathData
+                this.graph_data = res.data.data.graphData
+                console.log('graph_data', this.graph_data)
                 this.showSeeksGraph()
-            },(response)=>{
-                this.nodeData =null
-                this.record=null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else if(this.form.type=='PHYSICIAN_ID'){
+            },(res)=>{
+                console.error(res)
+            })
+        }else{
            getPhysicianList(this.form).then((response)=>{
                 console.info('response.data',response.data)
                 this.nodeData = response.data.data.nodeData
                 this.record = response.data.data.recordData
-                this.recordResult=this.record
                 console.log('nodedata',this.nodeData)
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else if(this.form.type=='HOSPITAL_ID'){
-           getHospitalList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                this.recordResult=this.record
-                console.log('nodedata',this.nodeData)
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else{
-            getDeptList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.record = response.data.data.recordData
-                this.recordResult=this.record
             },(response)=>{
                 this.nodeData =null
                 this.record =null
                 console.error(response)
             });
         }
-        
-      
-    },
-
-    clearData(){
-        this.nodeData = null
-        this.record = null
-        this.recordResult = []
-        this.form.id = ''
-        this.form.type = ''
-        this.form.name = ''
-        this.infoNodeData = Object.assign({},this.nullNodeData)
-        this.graph_data=null
-        
-    },
-    getParams(){
-        // 取到路由带过来的参数
-      const id = this.$route.query.id
-      const type = this.$route.query.type
-      const name = this.$route.query.name
-      // 将数据放在当前组件的数据内
-      if(id){
-        this.form.id = id
-        this.form.type = type
-        this.form.name = name
-        console.log('getParams',this.form)
-        this.onSubmit(this.form)
-      }else{
-        this.clearData()
       }
       
     },
@@ -734,7 +673,7 @@ export default {
     },
     toNodeInfo(Data){
       console.log('nodeAlgorithm', Data)
-        let routeUrl = this.$router.resolve({
+        this.$router.push({
           path: '/nodeAlgorithm/index',
           query: {
             node: Data.node,
@@ -742,29 +681,26 @@ export default {
             type: Data.type
           }
         })
-        window.open(routeUrl.href, '_blank')
     },
     toGroupInfo(Data){
       console.log('communityAlgorithm', Data)
-        let routeUrl = this.$router.resolve({
+        this.$router.push({
           path: '/communityAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
-        window.open(routeUrl.href, '_blank')
     },
     toPathInfo(Data){
       console.log('pathAlgorithm', Data)
-        let routeUrl = this.$router.resolve({
+        this.$router.push({
           path: '/pathAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
-        window.open(routeUrl.href, '_blank')
     },
     doAction(actionName) {
       if(actionName=='1'){

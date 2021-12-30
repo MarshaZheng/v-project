@@ -17,6 +17,7 @@ const Record = seq.define('medical_record', {
     DEPT_NAME: DataTypes.STRING,
     ADMISSION_DISEASE_ID: DataTypes.STRING,
     DISCHARGE_DISEASE_ID: DataTypes.STRING,
+
 }, {
     freezeTableName: true, // 默认false修改表名为复数，true不修改表名，与数据库表名同步    
     timestamps: false

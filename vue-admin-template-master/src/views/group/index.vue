@@ -346,6 +346,7 @@ export default {
     },
     showSeeksGraph(query) {
        var __graph_json_data = this.group
+       console.log('graphdata', __graph_json_data)
        // 以上数据中的node和link可以参考"Node节点"和"Link关系"中的参数进行配置 
        this.$refs.seeksRelationGraph.setJsonData(__graph_json_data, (seeksRGGraph) => {
          // Called when the relation-graph is completed 

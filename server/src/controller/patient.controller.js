@@ -7,6 +7,21 @@ class PatientController {
         console.log(id, name, type)
         var res = null
         var record = null
+        var graph = {
+                rootId: '1',
+                nodes: [
+                    { id: '1', text: '1', borderColor: 'yellow' },
+                    { id: '2', text: '2', color: '#43a2f1', fontColor: 'yellow' },
+                    { id: '3', text: '3', nodeShape: 1, width: 80, height: 60 },
+                    { id: '4', text: '4', nodeShape: 0, width: 150, height: 150 }
+                ],
+                links: [
+                    { from: '1', to: '2', text: '关系1', color: '#43a2f1' },
+                    { from: '1', to: '3', text: '关系2' },
+                    { from: '1', to: '4', text: '关系3' },
+                    { from: '2', to: '4', color: '#67C23A' }
+                ]
+            }
             // 2. 操作数据库
         if (id !== '') {
             record = await Record.findAll({ where: { PATIENT_ID: id } })
@@ -28,7 +43,8 @@ class PatientController {
                 message: "数据查询成功",
                 data: {
                     nodeData: res,
-                    recordData: record
+                    recordData: record,
+                    graphData: graph
                 },
             }
         }

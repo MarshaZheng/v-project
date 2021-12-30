@@ -188,38 +188,38 @@ export const constantRoutes = [{
         }]
     },
     {
-        path: '/nodeinfo',
+        path: '/nodeAlgorithm',
         component: Layout,
         children: [{
-            path: 'info',
+            path: 'index',
             name: 'NodeInfo',
             // hidden: true,
             component: () =>
-                import ('@/views/new/info'),
+                import ('@/views/new/node'),
             meta: { title: '节点相似性探索', icon: 'user' }
         }]
     },
     {
-        path: '/nodeinfo',
+        path: '/communityAlgorithm',
         component: Layout,
         children: [{
-            path: 'info',
-            name: 'NodeInfo',
+            path: 'index',
+            name: 'GroupInfo',
             // hidden: true,
             component: () =>
-                import ('@/views/new/info'),
+                import ('@/views/new/community'),
             meta: { title: '社区发现探索', icon: 'user' }
         }]
     },
     {
-        path: '/nodeinfo',
+        path: '/pathAlgorithm',
         component: Layout,
         children: [{
-            path: 'info',
-            name: 'NodeInfo',
+            path: 'index',
+            name: 'pathInfo',
             // hidden: true,
             component: () =>
-                import ('@/views/new/info'),
+                import ('@/views/new/path'),
             meta: { title: '关联路径探索', icon: 'user' }
         }]
     },

@@ -5,7 +5,6 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
-
 import '@/styles/index.scss' // global css
 
 import App from './App'
@@ -17,6 +16,9 @@ import '@/permission' // permission control
 import VueResource from 'vue-resource'
 import axios from 'axios'
 import request from '@/utils/request'
+
+
+
 Vue.prototype.req = request
     /**
      * If you don't want to use mock-server
@@ -33,8 +35,9 @@ if (process.env.NODE_ENV === 'production') {
 
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
-    // 如果想要中文版 element-ui，按如下方式声明
-    // Vue.use(ElementUI)
+
+// 如果想要中文版 element-ui，按如下方式声明
+// Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 Vue.use(VueResource)
