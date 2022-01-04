@@ -262,7 +262,8 @@
                   <div ref="myPage" style="height:calc(100vh - 50px);" @click="isShowNodeMenuPanel = false">
                       <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >
                       <div slot="node" slot-scope="{node}">
-                        <div style="height:64px;line-height: 64px;border-radius: 32px;cursor: pointer;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        <div style="margin:auto;font-size: 20px;padding-top: 20%;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        {{node.text}}
                         </div>
                       </div>
                       </SeeksRelationGraph>
@@ -276,6 +277,9 @@
                     <div class="c-node-menu-item" @click.stop="doAction('4')">关联路径探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('5')">删除节点</div>
                   </div>
+                </div>
+                <div v-show="isShowCircleTab" :style="{left:CircleTabPosition.x+'px',top:CircleTabPosition.y+'px'}" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
+                  
                 </div>
               </template>
               </el-col>
@@ -370,6 +374,8 @@ export default {
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
+      isShowCircletab: false,
+      CircleTabPosition: { x: 0, y: 0 },
       activeName: 'first',
       currentNode: null,
       form: {
@@ -463,10 +469,11 @@ export default {
     getParams(){
       console.log('before get')
         // 取到路由带过来的参数
-      this.form.id = this.$route.query.node
+      this.form.id = this.$route.query.root_node
       const nodes = this.$route.query.nodes
       this.form.type = this.$route.query.type
       var alform = {root_node:this.form.id, nodes:nodes, type:this.form.type}
+      console.log('alform',alform)
       // 将数据放在当前组件的数据内
       if(this.form.id===''||this.form.type===''){
          this.$notify({
@@ -519,7 +526,7 @@ export default {
       }
        console.log('nodes_id',nodes)
        if(this.algorithmForm.algorithm==='1'){ //节点相似性
-            var data = {node:this.algorithmForm.node_id,
+            var data = {root_node:this.algorithmForm.node_id,
                         nodes: nodes,
                         type:this.algorithmForm.type}
             this.toNodeInfo(data)
@@ -555,7 +562,12 @@ export default {
      onNodeClick(nodeObject, $event) {
        if ($event.button == 0){
        console.log('onNodeClick:', nodeObject)
-       getPatientList({id:nodeObject.id}).then((response)=>{
+       console.log('x,y:',nodeObject.x,nodeObject.y)
+       this.isShowCircletab=true
+       var _base_position = this.$refs.myPage.getBoundingClientRect()
+       this.CircleTabPosition.x=nodeObject.x - - _base_position.x //可能需要修改
+       this.CircleTabPosition.x=nodeObject.y - - _base_position.y
+       getPatientList({id:nodeObject.text}).then((response)=>{
                 console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
                 console.log('info_nodedata',this.infoNodeData)
@@ -587,7 +599,7 @@ export default {
         this.$router.push({
           path: '/nodeAlgorithm/index',
           query: {
-            node: Data.node,
+            root_node: Data.root_node,
             nodes: Data.nodes,
             type: Data.type
           }
@@ -664,5 +676,52 @@ export default {
 }
 .c-node-menu-item:hover{
   background-color: rgba(66,187,66,0.2);
+}
+
+.circle-option {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100px;
+  height: 100px;
+  border: 30px solid rgba(200, 200, 200, 0.7);
+  border-radius: 50px;
+  box-sizing: border-box;
+  z-index: 10;
+  display: none;
+  span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 30px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 10px;
+    color: white;
+    cursor: pointer;
+    &:hover {
+      color: #1b68ff;
+    }
+    &:nth-child(1) {
+      left: 5px;
+      top: -25px;
+    }
+ 
+    &:nth-child(2) {
+      left: 37px;
+      top: 10px;
+    }
+ 
+    &:nth-child(3) {
+      left: 5px;
+      top: 44px;
+    }
+ 
+    &:nth-child(4) {
+      left: -27px;
+      top: 10px;
+    }
+  }
 }
 </style>
