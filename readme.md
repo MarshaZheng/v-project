@@ -18,7 +18,7 @@
 
 ### 节点相似度表（病人）
 
-| PATIENT_ID1 | PATIENT_ID1 | SIMILARITY |
+| PATIENT_ID1 | PATIENT_ID2 | SIMILARITY |
 | ----------- | ----------- | ---------- |
 |             |             |            |
 

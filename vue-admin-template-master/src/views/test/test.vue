@@ -1,189 +1,198 @@
 <template>
-
-  <div class="app-container">
-    <div class="crumbs">
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item>
-                <font color='#409EFF'>查询条件</font>
-            </el-breadcrumb-item>
-        </el-breadcrumb>
-    </div>
-    <div class="handle-box">
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item>&ensp;</el-form-item>
-        <el-form ref="form" :model="form">
-          <el-form-item label="节点类型">
-            <el-select v-model="form.type" placeholder="please enter">
-              <el-option label="病人" value="PATIENT_ID" />
-              <el-option label="医生" value="PHYCISIAN_ID" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="节点ID">
-            <el-input v-model="form.id" />
-          </el-form-item>
-          <el-form-item label="节点名称">
-            <el-input v-model="form.name" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="onSubmit">搜索</el-button>
-          </el-form-item>
-        </el-form>
-        </el-form>
-     </div>
-    <div class="crumbs">
-        <el-breadcrumb separator="/">
-            <el-breadcrumb-item>
-                <font color='#409EFF'>匹配结果</font>
-            </el-breadcrumb-item>
-        </el-breadcrumb>
-    </div>
-    <el-table :data="nodeData" v-if="this.form.type=='PATIENT_ID'" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column align="center" label="节点id">
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="节点名称">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="性别">
-        <template slot-scope="scope">
-          {{ scope.row.sex }}
-        </template>
-      </el-table-column>
-       <el-table-column align="center" label="出生日期">
-        <template slot-scope="scope">
-          {{ scope.row.dob }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="参保类型">
-        <template slot-scope="scope">
-          {{ scope.row.benefit_type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="人员类别">
-        <template slot-scope="scope">
-          {{ scope.row.benefit_group_id }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="缴费地区">
-        <template slot-scope="scope">
-          {{ scope.row.area_id }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="工作单位">
-        <template slot-scope="scope">
-          {{ scope.row.company }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="社保卡号">
-        <template slot-scope="scope">
-          {{ scope.row.id_number }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="社保识别码">
-        <template slot-scope="scope">
-          {{ scope.row.id_type }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="地址">
-        <template slot-scope="scope">
-          {{ scope.row.address }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" @click="toInfo(scope.row)" >确认</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-table :data="nodeData" v-if="this.form.type=='PHYCISIAN_ID'" border class="table" ref="multipleTable" header-cell-class-name="table-header">
-      <el-table-column align="center" label="节点id">
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="节点名称">
-        <template slot-scope="scope">
-          {{ scope.row.doctor_name }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="医院id">
-        <template slot-scope="scope">
-          {{ scope.row.hospital_id }}
-        </template>
-      </el-table-column>
-       <el-table-column align="center" label="级别">
-        <template slot-scope="scope">
-          {{ scope.row.doctor_level }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="职称">
-        <template slot-scope="scope">
-          {{ scope.row.doctor_title }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="操作">
-        <template slot-scope="scope">
-          <el-button type="text" @click="toInfo(scope.row)" >确认</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    
+  <div class="wrapper">
+    <a href="#" class="show" @click="Bubblings($event)">START</a>
+    <ul>
+      <!-- 一级列表 -->
+      <li>
+        <a href="#" @click="Bubblings($event)">A</a>
+        <!-- 二级列表 -->
+        <ul>
+          <li>
+            <a href="#" @click="Bubblings($event)">A-1</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">A-2</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">A-3</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">A-4</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">A-5</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="#" @click="Bubblings($event)">B</a>
+        <ul>
+          <li>
+            <a href="#" @click="Bubblings($event)">B-1</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">B-2</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">B-3</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">B-4</a>
+          </li>
+          <li>
+            <a href="#" @click="Bubblings($event)">B-5</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-
-import {getList} from '@/api/test'
 export default {
-  name: 'Demo',
-  
-  data() {
-    return {
-      form: {
-        type: '',
-        id: '',
-        name:'',
-      },
-      nodeData:null
-    }
-  },
-
-  methods: { 
-    onSubmit() {
-        var url=null
-        if(this.form.type=='PATIENT_ID'){
-          url='/api/patient/fetchData'
-        }else{
-          url='/api/physician/fetchData'
+    name:'bubbling',
+    methods:{
+        Bubblings(e){
+            //获取点击的DOM对象
+            let self = e.target
+            //检查点击的是否是选中的圆
+            if (self.classList.contains('selected')) {
+                //如果是移除当前选中效果，返回上级菜单
+                self.classList.remove('selected')
+                //判断它的父级元素是不是顶级元素
+                if (!self.parentNode.classList.contains('wrapper')) {
+                    //如果不是顶级元素，展示对应的菜单列表
+                    self.parentNode.parentNode.parentNode
+                        .querySelector('a')
+                        .classList.add('selected')
+                } else {
+                    //如果是顶级元素，仅显示最顶级元素
+                    self.classList.add('show')
+                }
+            } else {
+                //如果点击的不是选中的圆
+                self.classList.add('selected')
+                //判断是否点击的是顶级元素
+                if (!self.parentNode.classList.contains('wrapper')) {
+                    //如果不是顶级元素，展开所点击的菜单列表
+                    // a(self) -> li(parent) -> ul(parent) -> li(parent) -> a(target)
+                    self.parentNode.parentNode.parentNode
+                        .querySelector('a')
+                        .classList.remove('selected')
+                } else {
+                    //点击顶级元素展开一级菜单列表
+                    self.classList.remove('show')
+                }
+            }
+            return false
         }
-        console.log('onsubmit')
-        getList(this.form).then((response)=>{
-            console.info('response.data',response.data)
-            this.nodeData = response.data.data.nodeData
-            console.log('nodedata',this.nodeData)
-        },(response)=>{
-            this.nodeData =null
-            console.error(response)
-        });
-      
-    },
-
-    toInfo(nodeData){
-      console.log('toInfo', nodeData)
-        this.$router.push({
-          path: '/info',
-          query: {
-            id: nodeData.id,
-            type: this.form.type,
-            name: nodeData.name
-          }
-        })
-    },
-  }
+    }
 }
 </script>
 
+ 
+<style scoped>
+ul {
+  list-style: none;
+}
+a {
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 120px;
+  display: none; /*默认所有的a都不显示*/
+  text-decoration: none;
+  color: #333;
+  transition: all 1s ease;
+  box-shadow: 0 0 15px #222;
+  font-family: "segoe ui";
+  font-weight: 200;
+  font-size: 16px;
+}
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+}
+a.show {
+  display: flex !important; /*因为开始设置了a标签为none，这里重置display可以让他显示*/
+}
+/*对所有的li标签加动画效果*/
+.wrapper li {
+  -webkit-transform: translate3d(0, 0, 0); /*调用GPU提升动画性能*/
+  transform: translate3d(0, 0, 0);
+  transition: all 1s ease;
+  /*下面的方法好像也可以提升性能，具体并没有比较*/
+  /* backface-visibility: hidden;
+    perspective: 1000; */
+}
+/*设置选中样式*/
+.selected {
+  background: rgba(51, 51, 51, 0.9);
+  display: flex;
+  /*调整中心圆形的位置*/
+  top: calc(50% - 50px);
+  left: calc(50% - 60px);
+  color: #f1f1f1;
+  animation: light 1s infinite;
+}
+/*让当前选中的子集列表显示*/
+.selected + ul > li > a {
+  /*让当前选中的子选项显示，因为默认是 display:none*/
+  display: flex;
+}
+/*设置 li 的位置，rotate是顺/逆时针旋转，translateX是沿x轴平移*/
+.selected + ul > li:nth-child(1) {
+  -webkit-transform: rotate(-120deg) translateX(80px);
+  transform: rotate(-120deg) translateX(80px);
+}
+/*设置a标签内字体的位置，应为容器旋转后，字体倾斜了，需要调整回来*/
+/*这里有一个小技巧：字体的旋转角度正好和外部容器的旋转角度相反，但是最后一个的位置需要调整*/
+.selected + ul > li:nth-child(1) > a {
+  -webkit-transform: rotate(120deg);
+  transform: rotate(120deg);
+}
+
+.selected + ul > li:nth-child(2) {
+  -webkit-transform: rotate(-40deg) translateX(80px);
+  transform: rotate(-40deg) translateX(80px);
+}
+.selected + ul > li:nth-child(2) > a {
+  -webkit-transform: rotate(40deg);
+  transform: rotate(40deg);
+}
+
+.selected + ul > li:nth-child(3) {
+  -webkit-transform: rotate(40deg) translateX(80px);
+  transform: rotate(40deg) translateX(80px);
+}
+.selected + ul > li:nth-child(3) > a {
+  -webkit-transform: rotate(-40deg);
+  transform: rotate(-40deg);
+}
+
+.selected + ul > li:nth-child(4) {
+  -webkit-transform: rotate(120deg) translateX(120px);
+  transform: rotate(120deg) translateX(120px);
+}
+.selected + ul > li:nth-child(4) > a {
+  -webkit-transform: rotate(-120deg);
+  transform: rotate(-120deg);
+}
+.selected + ul > li:nth-child(5) {
+  -webkit-transform: rotate(180deg) translateX(120px);
+  transform: rotate(180deg) translateX(120px);
+}
+.selected + ul > li:nth-child(5) > a {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+</style>

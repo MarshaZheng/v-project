@@ -16,8 +16,8 @@ import '@/permission' // permission control
 import VueResource from 'vue-resource'
 import axios from 'axios'
 import request from '@/utils/request'
-
-
+import CircleMenu from 'vue-circle-menu'
+Vue.component('CircleMenu', CircleMenu)
 
 Vue.prototype.req = request
     /**

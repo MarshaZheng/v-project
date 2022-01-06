@@ -329,7 +329,8 @@
                   <div ref="myPage" style="height:calc(100vh - 50px);" @click="isShowNodeMenuPanel = false">
                       <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >
                       <div slot="node" slot-scope="{node}">
-                        <div style="height:64px;line-height: 64px;border-radius: 32px;cursor: pointer;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        <div style="margin:auto;font-size: 20px;padding-top: 20%;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        {{node.text}}
                         </div>
                       </div>
                       </SeeksRelationGraph>
@@ -339,10 +340,68 @@
                     <div class="c-node-menu-item" @click.stop="doAction('1')">查看信息</div>
                     <div class="c-node-menu-item" @click.stop="doAction('2')">节点相似性探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('3')">社区发现探索</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('4')">关联路径探索</div>
+                    <div class="c-node-menu-item"  @click="dialogVisible1 = true">关联路径探索</div>
+                    <div class="c-node-menu-item" @click="dialogVisible2 = true">展开关联节点</div>
                     <div class="c-node-menu-item" @click.stop="doAction('5')">删除节点</div>
                   </div>
                 </div>
+                
+                  <el-dialog
+                    title="关联路径探索"
+                    :visible.sync="dialogVisible1"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="algorithmForm">
+                        <el-form-item label="节点类型">
+                            <el-input v-model="currentNode.data.type" :disabled="true" />
+                          </el-form-item>
+                         <el-form-item label="节点1id">
+                            <el-input v-model="currentNode.data.id" :disabled="true" />
+                          </el-form-item>
+                          <el-form-item label="节点2id">
+                            <el-input  v-model="pathnode2"  />
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible1 = false">取 消</el-button>
+                      <el-button type="primary" @click="giveDataToPathInfo()">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-dialog
+                    title="展开关联节点"
+                    :visible.sync="dialogVisible2"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="expandForm">
+                        <el-form-item label="关联节点类型">
+                            <el-select v-model="expandForm.expand_type" placeholder="please enter">
+                              <el-option label="病人" value="PATIENT_ID" />
+                              <el-option label="医生" value="PHYSICIAN_ID" />
+                              <el-option label="科室" value="DEPT_ID" />
+                              <el-option label="医院" value="HOSPITAL_ID" />
+                            </el-select>
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible2 = false">取 消</el-button>
+                      <el-button type="primary" @click="expandNode">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-row>
+                    <el-button type="primary"  circle>医院</el-button>
+                    <el-button type="success"  circle>患者</el-button>
+                    <el-button type="info" circle>科室</el-button>
+                    <el-button type="warning"  circle>医生</el-button>
+                    <el-button type="danger"  circle>入参节点</el-button>
+                  </el-row>
               </template>
               </el-col>
               <el-col :span="6" :model="infoNodeData">
@@ -422,7 +481,7 @@
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,getHospitalList,getDeptList} from '@/api/backend'
+import {getPatientList,getPhysicianList,getHospitalList,getDeptList,expandNode} from '@/api/backend'
 
 import SeeksRelationGraph from 'relation-graph'
 
@@ -432,6 +491,9 @@ export default {
   components: { SeeksRelationGraph },
   data() {
     return {
+      pathnode2:'',
+      dialogVisible1: false,
+      dialogVisible2: false,
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
@@ -445,6 +507,11 @@ export default {
       nodeData:null,
       record:null,
       recordResult:[],
+      expandForm:{
+        id:'',
+        type:'',
+        expand_type:''
+      },
       filterForm:{
         TIME:'',
         HOSPITAL_ID:'',
@@ -487,7 +554,7 @@ export default {
         id_type:''
       },
       graphOptions: {
-          "backgrounImage": "http://ai-mark.cn/images/ai-mark-desc.png",
+          
           "backgrounImageNoRepeat": true,
           "layouts": [
             {
@@ -512,7 +579,6 @@ export default {
           "isMoveByParentNode": true,
           "defaultNodeShape": 0,
           "disableZoom": false,
-          "defaultExpandHolderPosition": "bottom"
       },
        graph_data:{
          rootId:'',
@@ -569,6 +635,29 @@ export default {
      
    },
   methods: { 
+    expandNode(){
+      this.isShowNodeMenuPanel = false
+      console.log('expandNode')
+      this.dialogVisible2=false
+      this.expandForm.id = this.currentNode.data.id
+      this.expandForm.type = this.currentNode.data.type
+      expandNode(this.expandForm).then((response)=>{
+                console.info('response.data',response.data)
+                var __graph_json_data = response.data.data.graphData
+                this.$refs.seeksRelationGraph.appendJsonData(__graph_json_data, (seeksRGGraph) => {
+                  // 这些写上当图谱初始化完成后需要执行的代码
+                })
+            },(response)=>{
+                console.error(response)
+            });
+    },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
     handleSelectionChange(val) {
         this.algorithmForm.multipleSelection = val
         console.log('algorithm form:',this.algorithmForm)
@@ -669,7 +758,7 @@ export default {
       }
        console.log('nodes_id',nodes)
        if(this.algorithmForm.algorithm==='1'){ //节点相似性
-            var data = {node:this.algorithmForm.node_id,
+            var data = {root_node:this.algorithmForm.node_id,
                         nodes: nodes,
                         type:this.algorithmForm.type}
             this.toNodeInfo(data)
@@ -684,6 +773,7 @@ export default {
             this.toPathInfo(data)
        }
      },
+     
     toInfo(nodeData){
       console.log('toInfo', nodeData)
         this.$router.push({
@@ -691,7 +781,7 @@ export default {
           query: {
             id: nodeData.id,
             type: this.form.type,
-            name: nodeData.name
+            name: ''
           }
         })
     },
@@ -700,14 +790,17 @@ export default {
        // 以上数据中的node和link可以参考"Node节点"和"Link关系"中的参数进行配置 
        this.$refs.seeksRelationGraph.setJsonData(__graph_json_data, (seeksRGGraph) => {
          // Called when the relation-graph is completed 
+         console.log('showseeksgraph这里')
        })
      },
      onNodeClick(nodeObject, $event) {
        if ($event.button == 0){
        console.log('onNodeClick:', nodeObject)
-       getPatientList({id:nodeObject.id}).then((response)=>{
+       
+       getPatientList({id:nodeObject.data.id}).then((response)=>{
                 console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
+                this.infoNodeData.type = nodeObject.data.type
                 console.log('info_nodedata',this.infoNodeData)
        },(response)=>{
                 this.infoNodeData
@@ -737,7 +830,7 @@ export default {
         let routeUrl = this.$router.resolve({
           path: '/nodeAlgorithm/index',
           query: {
-            node: Data.node,
+            root_node: Data.root_node,
             nodes: Data.nodes,
             type: Data.type
           }
@@ -756,6 +849,7 @@ export default {
         window.open(routeUrl.href, '_blank')
     },
     toPathInfo(Data){
+      this.dialogVisible1 = false
       console.log('pathAlgorithm', Data)
         let routeUrl = this.$router.resolve({
           path: '/pathAlgorithm/index',
@@ -766,9 +860,35 @@ export default {
         })
         window.open(routeUrl.href, '_blank')
     },
+    giveDataToPathInfo(){
+       var data = {nodes:[this.currentNode.data.id,this.pathnode2],type:this.currentNode.data.type}
+       this.toPathInfo(data)
+     },
     doAction(actionName) {
+      this.isShowNodeMenuPanel = false
       if(actionName=='1'){
-        this.toInfo(this.currentNode)
+        this.form.type = this.currentNode.data.type
+        this.toInfo(this.currentNode.data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='3'){
+        var data = {
+          nodes:[this.currentNode.data.id],
+          type:this.currentNode.data.type
+        }
+        this.toGroupInfo(data)
       }else if(actionName=='5'){
         console.log('node',this.currentNode)
         var graph = this.$refs.seeksRelationGraph

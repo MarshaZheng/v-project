@@ -231,7 +231,7 @@
         </el-tab-pane>
 </el-tabs>
     <br/>
-  <div class="crumbs" v-if="this.graph_data!==null">
+  <div class="crumbs" >
         <el-breadcrumb separator="/">
             <el-breadcrumb-item>
                 <font color='#409EFF'>关联路径挖掘结果</font>
@@ -250,29 +250,32 @@
                             <el-option label="3阶关系" value="step3" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="中间节点1类型">
-                        <el-select v-model="filterForm.type1" placeholder="please enter">
+                    <el-form-item label="中间节点1类型" v-if="filterForm.step==='step1'||filterForm.step==='step2'||filterForm.step==='step3'">
+                        <el-select v-model="filterForm.type1" placeholder="please enter" >
                             <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
                             <el-option label="DEPT_ID" value="DEPT_ID" />
                             <el-option label="PATIENT_ID" value="PATIENT_ID" />
-                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                            <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="中间节点2类型">
-                        <el-select v-model="filterForm.type2" placeholder="please enter">
+                    <el-form-item label="中间节点2类型" v-if="filterForm.step==='step2'||filterForm.step==='step3'">
+                        <el-select v-model="filterForm.type2"  placeholder="please enter">
                             <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
                             <el-option label="DEPT_ID" value="DEPT_ID" />
                             <el-option label="PATIENT_ID" value="PATIENT_ID" />
-                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                            <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="中间节点3类型">
-                        <el-select v-model="filterForm.type3" placeholder="please enter">
+                    <el-form-item label="中间节点3类型" v-if="filterForm.step==='step3'">
+                        <el-select v-model="filterForm.type3"  placeholder="please enter">
                             <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
                             <el-option label="DEPT_ID" value="DEPT_ID" />
                             <el-option label="PATIENT_ID" value="PATIENT_ID" />
-                            <el-option label="HOSPITAL" value="HOSPITAL" />
+                            <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
                         </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                      <el-button type="success" @click="getPath" >筛选路径</el-button>
                     </el-form-item>
                 </el-form>
                 </el-form>
@@ -283,9 +286,9 @@
               {{ scope.row.step }}
             </template>
           </el-table-column>
-          <el-table-column align="center" label="中间节点类型">
+          <el-table-column align="center" label="中间节点1类型">
             <template slot-scope="scope">
-              {{ scope.row.internal_node_type }}
+              {{ scope.row.internal_node_type1 }}
             </template>
           </el-table-column>
           <el-table-column align="center" label="中间节点1">
@@ -333,21 +336,40 @@
                                         <el-option label="3阶关系" value="step3" />
                                     </el-select>
                                 </el-form-item>
-                                <el-form-item label="中间节点类型">
-                                    <el-select v-model="filterForm.type1" placeholder="please enter">
-                                        <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
-                                        <el-option label="DEPT_ID" value="DEPT_ID" />
-                                        <el-option label="PATIENT_ID" value="PATIENT_ID" />
-                                        <el-option label="HOSPITAL" value="HOSPITAL" />
-                                    </el-select>
-                                </el-form-item>
-                                
+                                <el-form-item label="中间节点1类型" v-if="filterForm.step==='step1'||filterForm.step==='step2'||filterForm.step==='step3'">
+                                  <el-select v-model="filterForm.type1" placeholder="please enter">
+                                      <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                                      <el-option label="DEPT_ID" value="DEPT_ID" />
+                                      <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                                      <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
+                                  </el-select>
+                              </el-form-item>
+                              <el-form-item label="中间节点2类型" v-if="filterForm.step==='step2'||filterForm.step==='step3'">
+                                <el-select v-model="filterForm.type2"  placeholder="please enter">
+                                    <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                                    <el-option label="DEPT_ID" value="DEPT_ID" />
+                                    <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                                    <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="中间节点3类型" v-if="filterForm.step==='step3'">
+                                <el-select v-model="filterForm.type3"  placeholder="please enter">
+                                    <el-option label="PHYSICIAN_ID" value="PHYSICIAN_ID" />
+                                    <el-option label="DEPT_ID" value="DEPT_ID" />
+                                    <el-option label="PATIENT_ID" value="PATIENT_ID" />
+                                    <el-option label="HOSPITAL_ID" value="HOSPITAL_ID" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item>
+                              <el-button type="success" @click="getPath" >筛选路径</el-button>
+                            </el-form-item>
                             </el-form>
                             </el-form>
                     </div>
                       <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >
                       <div slot="node" slot-scope="{node}">
-                        <div style="height:64px;line-height: 64px;border-radius: 32px;cursor: pointer;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        <div  @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                            {{node.text}}
                         </div>
                       </div>
                       </SeeksRelationGraph>
@@ -355,13 +377,69 @@
                   <div v-show="isShowNodeMenuPanel" :style="{left: nodeMenuPanelPosition.x + 'px', top: nodeMenuPanelPosition.y + 'px' }" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
                     <div style="line-height: 25px;padding-left: 10px;color: #888888;font-size: 12px;">对这个节点进行操作：</div>
                     <div class="c-node-menu-item" @click.stop="doAction('1')">跳转节点详情</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('6')">展开关联节点</div>
                     <div class="c-node-menu-item" @click.stop="doAction('2')">节点相似性探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('3')">社区发现探索</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('4')">关联路径探索</div>
+                    <div class="c-node-menu-item" @click="dialogVisible1 = true">关联路径探索</div>
+                    <div class="c-node-menu-item" @click="dialogVisible2 = true">展开关联节点</div>
                     <div class="c-node-menu-item" @click.stop="doAction('5')">删除节点</div>
                   </div>
                 </div>
+                 <el-dialog
+                    title="关联路径探索"
+                    :visible.sync="dialogVisible1"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="algorithmForm">
+                        <el-form-item label="节点类型">
+                            <el-input v-model="currentNode.data.type" :disabled="true" />
+                          </el-form-item>
+                         <el-form-item label="节点1id">
+                            <el-input v-model="currentNode.data.id" :disabled="true" />
+                          </el-form-item>
+                          <el-form-item label="节点2id">
+                            <el-input  v-model="pathnode2"  />
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible1 = false">取 消</el-button>
+                      <el-button type="primary" @click="giveDataToPathInfo()">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-dialog
+                    title="展开关联节点"
+                    :visible.sync="dialogVisible2"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="expandForm">
+                        <el-form-item label="关联节点类型">
+                            <el-select v-model="expandForm.expand_type" placeholder="please enter">
+                              <el-option label="病人" value="PATIENT_ID" />
+                              <el-option label="医生" value="PHYSICIAN_ID" />
+                              <el-option label="科室" value="DEPT_ID" />
+                              <el-option label="医院" value="HOSPITAL_ID" />
+                            </el-select>
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible2 = false">取 消</el-button>
+                      <el-button type="primary" @click="expandNode">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-row>
+                    <el-button type="primary"  circle>医院</el-button>
+                    <el-button type="success"  circle>患者</el-button>
+                    <el-button type="info" circle>科室</el-button>
+                    <el-button type="warning"  circle>医生</el-button>
+                    <el-button type="danger"  circle>入参节点</el-button>
+                  </el-row>
               </template>
               </el-col>
               <el-col :span="6" :model="infoNodeData">
@@ -443,7 +521,7 @@
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,pathAlgorithm} from '@/api/backend'
+import {getPatientList,getPhysicianList,pathAlgorithm, getPathData,expandNode} from '@/api/backend'
 import SeeksRelationGraph from 'relation-graph'
 
 
@@ -452,6 +530,12 @@ export default {
   components: { SeeksRelationGraph },
   data() {
     return {
+      color:{
+        PAITENT_ID:'#409EFF'
+      },
+      pathnode2:'',
+      dialogVisible1: false,
+      dialogVisible2: false,
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
@@ -474,6 +558,8 @@ export default {
         node_id:''
       },
       filterForm:{
+          // patient1:
+          nodes:[],
           step:'',
           type1:'',
           type2:'',
@@ -507,6 +593,11 @@ export default {
         id_number:'',
         id_type:''
       },
+      expandForm:{
+        id:'',
+        type:'',
+        expand_type:''
+      },
       graphOptions: {
         "backgrounImage": "http://ai-mark.cn/images/ai-mark-desc.png",
         "backgrounImageNoRepeat": true,
@@ -515,6 +606,7 @@ export default {
             "label": "中心",
             "layoutName": "tree",
             "layoutClassName": "seeks-layout-center",
+            
             "defaultJunctionPoint": "border",
             "defaultNodeShape": 0,
             "defaultLineShape": 1,
@@ -550,17 +642,61 @@ export default {
   },
   watch:{
     '$route': 'getParams',
+    filterForm:{
+      handler(val, oldVal){
+        console.log('val',val,'oldval',oldVal)
+        this.getPath()
+        console.log(this.pathData)
+        console.log(this.graph_data)
+      }
+    },
+    deep:true
   },
   mounted() {
     this.getParams()
    },
   methods: { 
-
+     expandNode(){
+      this.isShowNodeMenuPanel = false
+      console.log('expandNode')
+      this.dialogVisible2=false
+      this.expandForm.id = this.currentNode.data.id
+      this.expandForm.type = this.currentNode.data.type
+      expandNode(this.expandForm).then((response)=>{
+                console.info('response.data',response.data)
+                var __graph_json_data = response.data.data.graphData
+                this.$refs.seeksRelationGraph.appendJsonData(__graph_json_data, (seeksRGGraph) => {
+                  // 这些写上当图谱初始化完成后需要执行的代码
+                })
+            },(response)=>{
+                console.error(response)
+            });
+    },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
+    getPath(){
+      console.log(this.filterForm)
+      getPathData(this.filterForm).then((res)=>{
+                console.log(res)
+                this.pathData=res.data.data.pathData
+                this.graph_data = res.data.data.graphData
+                this.showSeeksGraph()
+            },(res)=>{
+                console.error(res)
+            })
+    },
     getParams(){
       console.log('before get')
         // 取到路由带过来的参数
-      const nodes = this.$route.query.nodes
+      var nodes = this.$route.query.nodes
+      this.filterForm.nodes = nodes
       this.form.type = this.$route.query.type
+      this.form.type = 'PATIENT_ID'
       var alform = { nodes:nodes, type:this.form.type}
       // 将数据放在当前组件的数据内
       if(this.form.type===''){
@@ -571,6 +707,7 @@ export default {
           })
       }else{
         if(this.form.type==='PATIENT_ID'){
+          console.log
             pathAlgorithm(alform).then((res)=>{
                 console.info('res.data',res.data)
                 this.nodeData = res.data.data.nodeData
@@ -598,31 +735,6 @@ export default {
       }
       
     },
-    runAlgorithm(){
-      console.log('run algorithm')
-      var nodes = []
-      for(var record of this.algorithmForm.multipleSelection ){
-        if(nodes.indexOf(record[this.algorithmForm.type]) == -1){
-          nodes.push(record[this.algorithmForm.type])
-        }
-      }
-       console.log('nodes_id',nodes)
-       if(this.algorithmForm.algorithm==='1'){ //节点相似性
-            var data = {node:this.algorithmForm.node_id,
-                        nodes: nodes,
-                        type:this.algorithmForm.type}
-            this.toNodeInfo(data)
-
-       }else if(this.algorithmForm.algorithm==='2'){ //社区发现
-            var data = {nodes: nodes,
-                        type:this.algorithmForm.type}
-            this.toGroupInfo(data)
-       }else{
-            var data = {nodes: nodes,
-                        type:this.algorithmForm.type}
-            this.toPathInfo(data)
-       }
-     },
     toInfo(nodeData){
       console.log('toInfo', nodeData)
         this.$router.push({
@@ -630,7 +742,7 @@ export default {
           query: {
             id: nodeData.id,
             type: this.form.type,
-            name: nodeData.name
+            name: ''
           }
         })
     },
@@ -644,9 +756,10 @@ export default {
      onNodeClick(nodeObject, $event) {
        if ($event.button == 0){
        console.log('onNodeClick:', nodeObject)
-       getPatientList({id:nodeObject.id}).then((response)=>{
+       getPatientList({id:nodeObject.text}).then((response)=>{
                 console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
+                this.infoNodeData.type = nodeObject.data.type
                 console.log('info_nodedata',this.infoNodeData)
        },(response)=>{
                 this.infoNodeData
@@ -673,42 +786,71 @@ export default {
     },
     toNodeInfo(Data){
       console.log('nodeAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/nodeAlgorithm/index',
           query: {
-            node: Data.node,
+            root_node: Data.root_node,
             nodes: Data.nodes,
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
     toGroupInfo(Data){
       console.log('communityAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/communityAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
     toPathInfo(Data){
+      this.dialogVisible1 = false
       console.log('pathAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/pathAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
+    giveDataToPathInfo(){
+       var data = {nodes:[this.currentNode.data.id,this.pathnode2],type:this.currentNode.data.type}
+       this.toPathInfo(data)
+     },
     doAction(actionName) {
       if(actionName=='1'){
-        this.toInfo(this.currentNode)
+        this.form.type = this.currentNode.data.type
+        this.toInfo(this.currentNode.data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='3'){
+        var data = {
+          nodes:[this.currentNode.data.id],
+          type:this.currentNode.data.type
+        }
+        this.toGroupInfo(data)
       }else if(actionName=='5'){
         console.log('node',this.currentNode)
         var graph = this.$refs.seeksRelationGraph
-        graph.getNodeById(this.currentNode.id).opacity = 0.1
+        graph.getNodeById(this.currentNode.id).isHide = true
       }
       else{
           this.$notify({

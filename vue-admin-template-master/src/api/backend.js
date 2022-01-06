@@ -23,3 +23,11 @@ export function communityAlgorithm(value) {
 export function pathAlgorithm(value) {
     return axios.post('/api/algorithm/relativePath', value)
 }
+
+export function getPathData(value) {
+    return axios.post('/api/algorithm/getPathData', value)
+}
+
+export function expandNode(value) {
+    return axios.post('/api/algorithm/expandNode', value)
+}

@@ -255,7 +255,7 @@
       <el-tab-pane label="可视化视图" name="second">
         <template v-if="this.graph_data!==null">
           <div>
-            <el-row type="flex" class="row-bg" justify="end">
+             <el-row type="flex" class="row-bg" justify="end">
               <el-col :span=18> 
               <template>
                 <div>
@@ -270,17 +270,71 @@
                   </div>
                   <div v-show="isShowNodeMenuPanel" :style="{left: nodeMenuPanelPosition.x + 'px', top: nodeMenuPanelPosition.y + 'px' }" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
                     <div style="line-height: 25px;padding-left: 10px;color: #888888;font-size: 12px;">对这个节点进行操作：</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('1')">跳转节点详情</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('6')">展开关联节点</div>
+                    <div class="c-node-menu-item" @click.stop="doAction('1')">查看信息</div>
                     <div class="c-node-menu-item" @click.stop="doAction('2')">节点相似性探索</div>
                     <div class="c-node-menu-item" @click.stop="doAction('3')">社区发现探索</div>
-                    <div class="c-node-menu-item" @click.stop="doAction('4')">关联路径探索</div>
+                    <div class="c-node-menu-item"  @click="dialogVisible1 = true">关联路径探索</div>
+                    <div class="c-node-menu-item" @click="dialogVisible2 = true">展开关联节点</div>
                     <div class="c-node-menu-item" @click.stop="doAction('5')">删除节点</div>
                   </div>
                 </div>
-                <div v-show="isShowCircleTab" :style="{left:CircleTabPosition.x+'px',top:CircleTabPosition.y+'px'}" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
-                  
-                </div>
+                
+                  <el-dialog
+                    title="关联路径探索"
+                    :visible.sync="dialogVisible1"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="algorithmForm">
+                        <el-form-item label="节点类型">
+                            <el-input v-model="currentNode.data.type" :disabled="true" />
+                          </el-form-item>
+                         <el-form-item label="节点1id">
+                            <el-input v-model="currentNode.data.id" :disabled="true" />
+                          </el-form-item>
+                          <el-form-item label="节点2id">
+                            <el-input  v-model="pathnode2"  />
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible1 = false">取 消</el-button>
+                      <el-button type="primary" @click="giveDataToPathInfo()">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-dialog
+                    title="展开关联节点"
+                    :visible.sync="dialogVisible2"
+                    width="30%"
+                    :before-close="handleClose" v-if="currentNode!==null">
+                    <div class="handle-box">
+                      <el-form class="demo-form-inline">
+                        <el-form ref="form" :model="expandForm">
+                        <el-form-item label="关联节点类型">
+                            <el-select v-model="expandForm.expand_type" placeholder="please enter">
+                              <el-option label="病人" value="PATIENT_ID" />
+                              <el-option label="医生" value="PHYSICIAN_ID" />
+                              <el-option label="科室" value="DEPT_ID" />
+                              <el-option label="医院" value="HOSPITAL_ID" />
+                            </el-select>
+                          </el-form-item>
+                        </el-form>
+                        </el-form>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                      <el-button @click="dialogVisible2 = false">取 消</el-button>
+                      <el-button type="primary" @click="expandNode">确 定</el-button>
+                    </span>
+                  </el-dialog>
+                  <el-row>
+                    <el-button type="primary"  circle>医院</el-button>
+                    <el-button type="success"  circle>患者</el-button>
+                    <el-button type="info" circle>科室</el-button>
+                    <el-button type="warning"  circle>医生</el-button>
+                    <el-button type="danger"  circle>入参节点</el-button>
+                  </el-row>
               </template>
               </el-col>
               <el-col :span="6" :model="infoNodeData">
@@ -362,7 +416,7 @@
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,nodeAlgorithm} from '@/api/backend'
+import {getPatientList,getPhysicianList,nodeAlgorithm,expandNode} from '@/api/backend'
 import SeeksRelationGraph from 'relation-graph'
 
 
@@ -371,6 +425,9 @@ export default {
   components: { SeeksRelationGraph },
   data() {
     return {
+      pathnode2:'',
+      dialogVisible1: false,
+      dialogVisible2: false,
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
@@ -390,6 +447,11 @@ export default {
         type:'',
         algorithm:'',
         node_id:''
+      },
+      expandForm:{
+        id:'',
+        type:'',
+        expand_type:''
       },
       sim_node:null,
       infoNodeData:{
@@ -465,7 +527,29 @@ export default {
     this.getParams()
    },
   methods: { 
-
+    expandNode(){
+      this.isShowNodeMenuPanel = false
+      console.log('expandNode')
+      this.dialogVisible2=false
+      this.expandForm.id = this.currentNode.data.id
+      this.expandForm.type = this.currentNode.data.type
+      expandNode(this.expandForm).then((response)=>{
+                console.info('response.data',response.data)
+                var __graph_json_data = response.data.data.graphData
+                this.$refs.seeksRelationGraph.appendJsonData(__graph_json_data, (seeksRGGraph) => {
+                  // 这些写上当图谱初始化完成后需要执行的代码
+                })
+            },(response)=>{
+                console.error(response)
+            });
+    },
+    handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      },
     getParams(){
       console.log('before get')
         // 取到路由带过来的参数
@@ -548,7 +632,7 @@ export default {
           query: {
             id: nodeData.id,
             type: this.form.type,
-            name: nodeData.name
+            name: ''
           }
         })
     },
@@ -563,13 +647,14 @@ export default {
        if ($event.button == 0){
        console.log('onNodeClick:', nodeObject)
        console.log('x,y:',nodeObject.x,nodeObject.y)
-       this.isShowCircletab=true
+       
        var _base_position = this.$refs.myPage.getBoundingClientRect()
        this.CircleTabPosition.x=nodeObject.x - - _base_position.x //可能需要修改
        this.CircleTabPosition.x=nodeObject.y - - _base_position.y
        getPatientList({id:nodeObject.text}).then((response)=>{
                 console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
+                this.infoNodeData.type = nodeObject.data.type
                 console.log('info_nodedata',this.infoNodeData)
        },(response)=>{
                 this.infoNodeData
@@ -596,7 +681,7 @@ export default {
     },
     toNodeInfo(Data){
       console.log('nodeAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/nodeAlgorithm/index',
           query: {
             root_node: Data.root_node,
@@ -604,30 +689,59 @@ export default {
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
     toGroupInfo(Data){
       console.log('communityAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/communityAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
     toPathInfo(Data){
+      this.dialogVisible1 = false
       console.log('pathAlgorithm', Data)
-        this.$router.push({
+        let routeUrl = this.$router.resolve({
           path: '/pathAlgorithm/index',
           query: {
             nodes: Data.nodes,
             type: Data.type
           }
         })
+        window.open(routeUrl.href, '_blank')
     },
+    giveDataToPathInfo(){
+       var data = {nodes:[this.currentNode.data.id,this.pathnode2],type:this.currentNode.data.type}
+       this.toPathInfo(data)
+     },
     doAction(actionName) {
       if(actionName=='1'){
-        this.toInfo(this.currentNode)
+        this.form.type = this.currentNode.data.type
+        this.toInfo(this.currentNode.data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='2'){
+        var data = {
+          root_node:this.currentNode.data.id,
+          nodes:[],
+          type:this.currentNode.data.type
+        }
+        this.toNodeInfo(data)
+      }else if(actionName=='3'){
+        var data = {
+          nodes:[this.currentNode.data.id],
+          type:this.currentNode.data.type
+        }
+        this.toGroupInfo(data)
       }else if(actionName=='5'){
         console.log('node',this.currentNode)
         var graph = this.$refs.seeksRelationGraph
