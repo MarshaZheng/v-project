@@ -35,7 +35,7 @@
         </el-form>
         </el-form>
      </div>
-    <div class="crumbs" v-if="this.nodeData!==null">
+    <div class="crumbs" v-if="this.nodeData!==null||this.type!=='DEPT_ID'">
         <el-breadcrumb separator="/">
             <el-breadcrumb-item>
                 <font color='#409EFF'>节点属性信息</font>
@@ -162,7 +162,7 @@
           {{ scope.row.flag }}
         </template>
       </el-table-column>
-      <el-table-column align="center" label="装在时间">
+      <el-table-column align="center" label="装载时间">
         <template slot-scope="scope">
           {{ scope.row.load_date }}
         </template>
@@ -322,19 +322,29 @@
     </div><br/>
     <template v-if="this.graph_data!==null">
           <div>
+          
             <el-row type="flex" class="row-bg" justify="end">
               <el-col :span=18> 
               <template>
                 <div>
+                
                   <div ref="myPage" style="height:calc(100vh - 50px);" @click="isShowNodeMenuPanel = false">
-                      <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >
+                  
+                      <SeeksRelationGraph ref="seeksRelationGraph" :options="graphOptions" :on-node-click="onNodeClick" :on-line-click="onLineClick" >    
                       <div slot="node" slot-scope="{node}">
-                        <div style="margin:auto;font-size: 20px;padding-top: 20%;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
+                        <div style="margin:auto;font-size: 20px;padding-top: 30%;" @click="onNodeClick(node, $event)" @contextmenu.prevent.stop="showNodeMenus(node, $event)">
                         {{node.text}}
                         </div>
                       </div>
+                      
                       </SeeksRelationGraph>
-                  </div>
+                <div class="ooc" v-if="this.isCircleVisible===true" :style="{left: CirclePosition.x + 'px', top: CirclePosition.y + 'px' }">
+                          <p1 @click="toExpandNode('PATIENT_ID')"><font size='2px'>患者</font></p1>
+                          <p2 @click="toExpandNode('PHYSICIAN_ID')"><font size='2px'>医生</font></p2>
+                          <p3 @click="toExpandNode('HOSPITAL_ID')"><font size='2px'>医院</font></p3>
+                          <p4 @click="toExpandNode('DEPT_ID')"><font size='2px'>科室</font></p4>
+                        </div>
+                  </div> 
                   <div v-show="isShowNodeMenuPanel" :style="{left: nodeMenuPanelPosition.x + 'px', top: nodeMenuPanelPosition.y + 'px' }" style="z-index: 999;padding:10px;background-color: #ffffff;border:#eeeeee solid 1px;box-shadow: 0px 0px 8px #cccccc;position: absolute;">
                     <div style="line-height: 25px;padding-left: 10px;color: #888888;font-size: 12px;">对这个节点进行操作：</div>
                     <div class="c-node-menu-item" @click.stop="doAction('1')">查看信息</div>
@@ -404,8 +414,8 @@
                   </el-row>
               </template>
               </el-col>
-              <el-col :span="6" :model="infoNodeData">
-                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''">
+              <el-col :span="6" :model="infoNodeData" >
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='PATIENT_ID'">
                   <el-descriptions-item>
                     <template slot="label">
                       节点类型
@@ -417,6 +427,12 @@
                       节点id
                     </template>
                     {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.name}}
                   </el-descriptions-item>
                   <el-descriptions-item>
                     <template slot="label">
@@ -473,6 +489,100 @@
                     {{infoNodeData.address}}
                   </el-descriptions-item>
                 </el-descriptions>
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='PHYSICIAN_ID'">
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点类型
+                    </template>
+                    {{infoNodeData.type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                     节点名称
+                    </template>
+                    {{infoNodeData.doctor_name}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      医院id
+                    </template>
+                    {{infoNodeData.hospital_id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      级别
+                    </template>
+                    {{infoNodeData.doctor_level}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      职称
+                    </template>
+                    {{infoNodeData.doctor_title}}
+                  </el-descriptions-item>
+                </el-descriptions>
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='HOSPITAL_ID'">
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点类型
+                    </template>
+                    {{infoNodeData.type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                     节点名称
+                    </template>
+                    {{infoNodeData.name}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      级别
+                    </template>
+                    {{infoNodeData.p_level}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      所属地区
+                    </template>
+                    {{infoNodeData.area_id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      定点基层类型
+                    </template>
+                    {{infoNodeData.h_type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      收费类别
+                    </template>
+                    {{infoNodeData.charge_type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      经度
+                    </template>
+                    {{infoNodeData.longitude}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      纬度
+                    </template>
+                    {{infoNodeData.latitude}}
+                  </el-descriptions-item>
+                </el-descriptions>
               </el-col>
             </el-row>
           </div>
@@ -481,7 +591,7 @@
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,getHospitalList,getDeptList,expandNode} from '@/api/backend'
+import {fetchData,expandNode} from '@/api/backend'
 
 import SeeksRelationGraph from 'relation-graph'
 
@@ -491,12 +601,14 @@ export default {
   components: { SeeksRelationGraph },
   data() {
     return {
+      isCircleVisible:false,
       pathnode2:'',
       dialogVisible1: false,
       dialogVisible2: false,
       isShowCodePanel: false,
       isShowNodeMenuPanel: false,
       nodeMenuPanelPosition: { x: 0, y: 0 },
+      CirclePosition:{x:0,y:0},
       activeName: 'first',
       currentNode: null,
       form: {
@@ -554,31 +666,45 @@ export default {
         id_type:''
       },
       graphOptions: {
-          
-          "backgrounImageNoRepeat": true,
-          "layouts": [
-            {
-              "label": "中心",
-              "layoutName": "force",
-              "layoutClassName": "seeks-layout-center",
-              "defaultExpandHolderPosition": "hide",
-              "defaultJunctionPoint": "border"
-            }
-          ],
-          "defaultLineMarker": {
-            "markerWidth": 12,
-            "markerHeight": 12,
-            "refX": 6,
-            "refY": 6,
-            "data": "M2,2 L10,6 L2,10 L6,6 L2,2"
+        "backgrounImage": "",
+        "backgrounImageNoRepeat": true,
+        "layouts": [
+          {
+            "label": "中心",
+            "layoutName": "center",
+            "layoutClassName": "seeks-layout-center",
+            "useLayoutStyleOptions": true,
+            "distance_coefficient": 1
           },
-          "allowShowMiniToolBar": true,
-          "allowSwitchLineShape": true,
-          "allowSwitchJunctionPoint": true,
-          "allowShowMiniView": false,
-          "isMoveByParentNode": true,
-          "defaultNodeShape": 0,
-          "disableZoom": false,
+          {
+            "label": "树状",
+            "layoutName": "tree",
+            "layoutClassName": "seeks-layout-center",
+            "useLayoutStyleOptions": true,
+            "defaultNodeBorderColor": "#E4E4E4",
+            "defaultNodeWidth": "80",
+            "defaultJunctionPoint": "border",
+            "defaultLineShape": 1,
+            "min_per_width": "100"
+          }
+        ],
+        "defaultLineMarker": {
+          "markerWidth": 12,
+          "markerHeight": 12,
+          "refX": 6,
+          "refY": 6,
+          "data": "M2,2 L10,6 L2,10 L6,6 L2,2"
+        },
+        "defaultNodeBorderColor": null,
+        "defaultNodeColor": "rgba(118, 198, 79, 1)",
+        "defaultNodeFontColor": "rgba(0, 0, 0, 1)",
+        "hideNodeContentByZoom": true,
+        "isMoveByParentNode": true,
+        "allowSwitchJunctionPoint": true,
+        "allowSwitchLineShape": true,
+        "allowShowMiniNameFilter": true,
+        "allowShowMiniView": false,
+        "defaultLineColor": "rgba(169, 169, 169, 1)"
       },
        graph_data:{
          rootId:'',
@@ -635,6 +761,12 @@ export default {
      
    },
   methods: { 
+    toExpandNode(expand_type){
+      this.isCircleVisible = false
+       console.log('toExpandNode')
+      this.expandForm.expand_type = expand_type
+      this.expandNode()
+    },
     expandNode(){
       this.isShowNodeMenuPanel = false
       console.log('expandNode')
@@ -663,61 +795,75 @@ export default {
         console.log('algorithm form:',this.algorithmForm)
       },
     onSubmit() {
-        if(this.form.type=='PATIENT_ID'){
-           getPatientList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                this.recordResult = this.record
-                this.graph_data = response.data.data.graphData
-                console.log('nodedata',this.nodeData)
-                console.log('graphdata',this.graph_data)
-                this.showSeeksGraph()
-            },(response)=>{
-                this.nodeData =null
-                this.record=null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else if(this.form.type=='PHYSICIAN_ID'){
-           getPhysicianList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                this.recordResult=this.record
-                console.log('nodedata',this.nodeData)
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else if(this.form.type=='HOSPITAL_ID'){
-           getHospitalList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                this.recordResult=this.record
-                console.log('nodedata',this.nodeData)
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                this.recordResult=null
-                console.error(response)
-            });
-        }else{
-            getDeptList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.record = response.data.data.recordData
-                this.recordResult=this.record
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                console.error(response)
-            });
-        }
+        // if(this.form.type=='PATIENT_ID'){
+        //    getPatientList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.nodeData = response.data.data.nodeData
+        //         this.record = response.data.data.recordData
+        //         this.recordResult = this.record
+        //         this.graph_data = response.data.data.graphData
+        //         console.log('nodedata',this.nodeData)
+        //         console.log('graphdata',this.graph_data)
+        //         this.showSeeksGraph()
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record=null
+        //         this.recordResult=null
+        //         console.error(response)
+        //     });
+        // }else if(this.form.type=='PHYSICIAN_ID'){
+        //    getPhysicianList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.nodeData = response.data.data.nodeData
+        //         this.record = response.data.data.recordData
+        //         this.recordResult=this.record
+        //         console.log('nodedata',this.nodeData)
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record =null
+        //         this.recordResult=null
+        //         console.error(response)
+        //     });
+        // }else if(this.form.type=='HOSPITAL_ID'){
+        //    getHospitalList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.nodeData = response.data.data.nodeData
+        //         this.record = response.data.data.recordData
+        //         this.recordResult=this.record
+        //         console.log('nodedata',this.nodeData)
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record =null
+        //         this.recordResult=null
+        //         console.error(response)
+        //     });
+        // }else{
+        //     getDeptList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.record = response.data.data.recordData
+        //         this.recordResult=this.record
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record =null
+        //         console.error(response)
+        //     });
+        // }
         
-      
+        fetchData(this.form).then((response)=>{
+              console.info('response.data',response.data)
+              this.nodeData = response.data.data.nodeData
+              this.record = response.data.data.recordData
+              this.recordResult = this.record
+              this.graph_data = response.data.data.graphData
+              console.log('nodedata',this.nodeData)
+              console.log('graphdata',this.graph_data)
+              this.showSeeksGraph()
+          },(response)=>{
+              this.nodeData =null
+              this.record=null
+              this.recordResult=null
+              console.error(response)
+          })
     },
 
     clearData(){
@@ -796,14 +942,23 @@ export default {
      onNodeClick(nodeObject, $event) {
        if ($event.button == 0){
        console.log('onNodeClick:', nodeObject)
+       this.currentNode = nodeObject
        
-       getPatientList({id:nodeObject.data.id}).then((response)=>{
-                console.info('response.data',response.data)
+       var _base_position = this.$refs.myPage.getBoundingClientRect()
+       console.log('base_posision',_base_position)
+       console.log('node position',nodeObject.x,nodeObject.y)
+       console.log('event.client.XY',$event.clientX,$event.clientY)
+       this.CirclePosition.x = nodeObject.x-27
+       this.CirclePosition.y = nodeObject.y-16
+       console.log('circlePosition',this.CirclePosition.x,this.CirclePosition.y)
+       this.isCircleVisible = !this.isCircleVisible
+      // this.isCircleVisible = true
+       fetchData({id:nodeObject.data.id,type:nodeObject.data.type}).then((response)=>{
+                // console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
                 this.infoNodeData.type = nodeObject.data.type
-                console.log('info_nodedata',this.infoNodeData)
+                // console.log('info_nodedata',this.infoNodeData)
        },(response)=>{
-                this.infoNodeData
                 console.error(response)
         });
        }else{
@@ -823,6 +978,7 @@ export default {
         this.isShowNodeMenuPanel = true
         this.nodeMenuPanelPosition.x = $event.clientX - _base_position.x
         this.nodeMenuPanelPosition.y = $event.clientY - _base_position.y
+        console.log('nodeMenus,x,y',this.nodeMenuPanelPosition.x,this.nodeMenuPanelPosition.y)
       
     },
     toNodeInfo(Data){
@@ -937,5 +1093,63 @@ export default {
 }
 .c-node-menu-item:hover{
   background-color: rgba(66,187,66,0.2);
+}
+
+</style>
+
+<style>
+.ooc{
+    height:140px;
+    width:140px;
+    position:absolute;
+    border-radius: 50%;
+    background: none;
+    border:30px solid;
+    border-color: rgb(236, 236, 236) rgb(221, 221, 221);
+    margin:5px;
+}
+.ooc p1{
+    left:-30px;
+    top:25px;
+    z-index:999;
+    position:absolute;
+    height:34px;
+    width:34px;
+    border-radius: 50%;
+    background: transparent;;
+    margin:3px;
+}
+.ooc p2{
+    left:80px;
+    top:25px;
+    z-index:999;
+    position:absolute;
+    height:35px;
+    width:35px;
+    border-radius: 50%;
+    background: transparent;
+    margin:3px;
+}
+.ooc p3{
+    top:80px;
+    left:20px;
+    z-index:999;
+    position:absolute;
+    height:34px;
+    width:34px;
+    border-radius: 50%;
+    background: transparent;
+    margin:3px;
+}
+.ooc p4{
+    top:-25px;
+    left:20px;
+    z-index:999;
+    position:absolute;
+    height:34px;
+    width:34px;
+    border-radius: 50%;
+    background: transparent;
+    margin:3px;
 }
 </style>

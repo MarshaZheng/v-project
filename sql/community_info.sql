@@ -1,0 +1,10 @@
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (1, '1', '1');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (2, '2', '1');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (3, '3', '1');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (4, '4', '2');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (5, '5', '2');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (6, '6', '2');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (7, '7', '1');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (8, '8', '3');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (9, '9', '3');
+INSERT INTO `community_info`(`id`, `PATIENT_ID`, `COMMUNITY_ID`) VALUES (10, '10', '3');

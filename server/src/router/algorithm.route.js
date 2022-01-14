@@ -1,6 +1,6 @@
 const Router = require('koa-router')
 
-const { expandNode, nodeSimilarity, communityDiscovery, relativePath, getPathData } = require('../controller/algorithm.controller')
+const { fetchData, expandNode, nodeSimilarity, communityDiscovery, relativePath, getPathData } = require('../controller/algorithm.controller')
 
 const router = new Router({ prefix: '/algorithm' })
 
@@ -8,6 +8,7 @@ const router = new Router({ prefix: '/algorithm' })
 // router.post('/register', register)
 
 // 登录接口
+router.post('/fetchData', fetchData)
 router.post('/expandNode', expandNode)
 router.post('/nodeSimilarity', nodeSimilarity)
 router.post('/communityDiscovery', communityDiscovery)

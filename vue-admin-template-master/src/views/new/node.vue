@@ -338,7 +338,7 @@
               </template>
               </el-col>
               <el-col :span="6" :model="infoNodeData">
-                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''">
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='PATIENT_ID'">
                   <el-descriptions-item>
                     <template slot="label">
                       节点类型
@@ -350,6 +350,12 @@
                       节点id
                     </template>
                     {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.name}}
                   </el-descriptions-item>
                   <el-descriptions-item>
                     <template slot="label">
@@ -406,6 +412,100 @@
                     {{infoNodeData.address}}
                   </el-descriptions-item>
                 </el-descriptions>
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='PHYSICIAN_ID'">
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点类型
+                    </template>
+                    {{infoNodeData.type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                     节点名称
+                    </template>
+                    {{infoNodeData.doctor_name}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      医院id
+                    </template>
+                    {{infoNodeData.hospital_id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      级别
+                    </template>
+                    {{infoNodeData.doctor_level}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      职称
+                    </template>
+                    {{infoNodeData.doctor_title}}
+                  </el-descriptions-item>
+                </el-descriptions>
+                <el-descriptions :model='infoNodeData' class="margin-top" title="节点信息" :column="1" :size="small" border v-if="infoNodeData.id!==''&&infoNodeData.type==='HOSPITAL_ID'">
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点类型
+                    </template>
+                    {{infoNodeData.type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      节点id
+                    </template>
+                    {{infoNodeData.id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                     节点名称
+                    </template>
+                    {{infoNodeData.name}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      级别
+                    </template>
+                    {{infoNodeData.p_level}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      所属地区
+                    </template>
+                    {{infoNodeData.area_id}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      定点基层类型
+                    </template>
+                    {{infoNodeData.h_type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      收费类别
+                    </template>
+                    {{infoNodeData.charge_type}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      经度
+                    </template>
+                    {{infoNodeData.longitude}}
+                  </el-descriptions-item>
+                  <el-descriptions-item>
+                    <template slot="label">
+                      纬度
+                    </template>
+                    {{infoNodeData.latitude}}
+                  </el-descriptions-item>
+                </el-descriptions>
               </el-col>
             </el-row>
           </div>
@@ -416,7 +516,7 @@
 </template>
 
 <script>
-import {getPatientList,getPhysicianList,nodeAlgorithm,expandNode} from '@/api/backend'
+import {fetchData,nodeAlgorithm,expandNode} from '@/api/backend'
 import SeeksRelationGraph from 'relation-graph'
 
 
@@ -483,31 +583,47 @@ export default {
         id_type:''
       },
       graphOptions: {
-          "backgrounImage": "http://ai-mark.cn/images/ai-mark-desc.png",
-          "backgrounImageNoRepeat": true,
-          "layouts": [
-            {
-              "label": "中心",
-              "layoutName": "force",
-              "layoutClassName": "seeks-layout-center",
-              "defaultExpandHolderPosition": "hide",
-              "defaultJunctionPoint": "border"
-            }
-          ],
-          "defaultLineMarker": {
-            "markerWidth": 12,
-            "markerHeight": 12,
-            "refX": 6,
-            "refY": 6,
-            "data": "M2,2 L10,6 L2,10 L6,6 L2,2"
+        "backgrounImage": "",
+        "backgrounImageNoRepeat": true,
+        "layouts": [
+          {
+            "label": "中心",
+            "layoutName": "center",
+            "layoutClassName": "seeks-layout-center",
+            "useLayoutStyleOptions": true,
+            "distance_coefficient": 1,
+            "defaultNodeShape":0,
           },
-          "allowShowMiniToolBar": true,
-          "allowSwitchLineShape": true,
-          "allowSwitchJunctionPoint": true,
-          "allowShowMiniView": false,
-          "isMoveByParentNode": true,
-          "defaultNodeShape": 0,
-          "disableZoom": false,
+          {
+            "label": "树状",
+            "layoutName": "tree",
+            "layoutClassName": "seeks-layout-center",
+            "useLayoutStyleOptions": true,
+            "defaultNodeBorderColor": "#E4E4E4",
+            "defaultNodeWidth": "80",
+            "defaultJunctionPoint": "border",
+            "defaultLineShape": 1,
+            "min_per_width": "100",
+          },
+          
+        ],
+        "defaultLineMarker": {
+          "markerWidth": 12,
+          "markerHeight": 12,
+          "refX": 6,
+          "refY": 6,
+          "data": "M2,2 L10,6 L2,10 L6,6 L2,2"
+        },
+        "defaultNodeBorderColor": null,
+        "defaultNodeColor": "rgba(118, 198, 79, 1)",
+        "defaultNodeFontColor": "rgba(0, 0, 0, 1)",
+        "hideNodeContentByZoom": true,
+        "isMoveByParentNode": true,
+        "allowSwitchJunctionPoint": true,
+        "allowSwitchLineShape": true,
+        "allowShowMiniNameFilter": true,
+        "allowShowMiniView": false,
+        "defaultLineColor": "rgba(169, 169, 169, 1)"
       },
        graph_data:{
          rootId:'',
@@ -566,8 +682,38 @@ export default {
             type: 'error'
           })
       }else{
-        if(this.form.type==='PATIENT_ID'){
-           getPatientList(this.form).then((response)=>{
+        // if(this.form.type==='PATIENT_ID'){
+        //    getPatientList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.nodeData = response.data.data.nodeData
+        //         this.record = response.data.data.recordData
+        //         console.log('nodedata',this.nodeData)
+        //         nodeAlgorithm(alform).then((res)=>{
+        //           console.info('res.data',res.data)
+        //           this.sim_node = res.data.data.nodeData
+        //           this.graph_data = res.data.data.graphData
+        //           this.showSeeksGraph()
+        //         },(res)=>{
+        //           console.error(res)
+        //         })
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record=null
+        //         console.error(response)
+        //     });
+        // }else{
+        //    getPhysicianList(this.form).then((response)=>{
+        //         console.info('response.data',response.data)
+        //         this.nodeData = response.data.data.nodeData
+        //         this.record = response.data.data.recordData
+        //         console.log('nodedata',this.nodeData)
+        //     },(response)=>{
+        //         this.nodeData =null
+        //         this.record =null
+        //         console.error(response)
+        //     });
+        // }
+        fetchData(this.form).then((response)=>{
                 console.info('response.data',response.data)
                 this.nodeData = response.data.data.nodeData
                 this.record = response.data.data.recordData
@@ -585,18 +731,6 @@ export default {
                 this.record=null
                 console.error(response)
             });
-        }else{
-           getPhysicianList(this.form).then((response)=>{
-                console.info('response.data',response.data)
-                this.nodeData = response.data.data.nodeData
-                this.record = response.data.data.recordData
-                console.log('nodedata',this.nodeData)
-            },(response)=>{
-                this.nodeData =null
-                this.record =null
-                console.error(response)
-            });
-        }
       }
       
     },
@@ -651,7 +785,7 @@ export default {
        var _base_position = this.$refs.myPage.getBoundingClientRect()
        this.CircleTabPosition.x=nodeObject.x - - _base_position.x //可能需要修改
        this.CircleTabPosition.x=nodeObject.y - - _base_position.y
-       getPatientList({id:nodeObject.text}).then((response)=>{
+       fetchData({id:nodeObject.data.id,type:nodeObject.data.type}).then((response)=>{
                 console.info('response.data',response.data)
                 this.infoNodeData = response.data.data.nodeData[0]
                 this.infoNodeData.type = nodeObject.data.type

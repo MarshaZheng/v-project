@@ -31,3 +31,7 @@ export function getPathData(value) {
 export function expandNode(value) {
     return axios.post('/api/algorithm/expandNode', value)
 }
+
+export function fetchData(value) {
+    return axios.post('/api/algorithm/fetchData', value)
+}

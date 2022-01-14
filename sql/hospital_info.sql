@@ -1,0 +1,2 @@
+INSERT INTO `hospital_info`(`id`, `name`, `p_level`, `type`, `area_id`, `flag`, `load_date`, `h_type`, `charge_type`, `longitude`, `latitude`) VALUES (1, 'xxx医院', '1', '1', '1', '1', '1', '1', '1', '1', '1');
+INSERT INTO `hospital_info`(`id`, `name`, `p_level`, `type`, `area_id`, `flag`, `load_date`, `h_type`, `charge_type`, `longitude`, `latitude`) VALUES (2, 'xx医院', '2', '2', '2', '2', '2', '2', '2', '2', '2');

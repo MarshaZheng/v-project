@@ -4,7 +4,9 @@ const Physician = require('../model/physician_info.model')
 const Path = require('../model/path_info.model')
 const Similarity = require('../model/similarity_info.model')
 const Community = require('../model/community_info.model')
+const Dept = require('../model/dept_info.model')
 const { Op } = require("sequelize")
+const Hospital = require('../model/hospital_info.model')
 class AlgorithmController {
     async relativePath(ctx, next) {
         var { nodes, type } = ctx.request.body
@@ -256,9 +258,10 @@ class AlgorithmController {
 
         //根据sorted_nodes构建图
         var color = { 'root': '#F56C6C', 'PATIENT_ID': '#67C23A', 'HOSPITAL_ID': '#43a2f1', 'PHYSICIAN_ID': '#E6A23C', 'DEPT_ID': '#909399' }
+        var community_color = ['#FF6666', '#FFFF00', '#006699', '#FF6600', '#FF9966', '#339933', '#FFCC33', '#99CC33', '#0099CC']
         for (var k = 0; k < sorted_nodes.length; k++) {
             for (var i = 0; i < sorted_nodes[k].length; i++) {
-                graph.nodes.push({ id: type + sorted_nodes[k][i], text: sorted_nodes[k][i], color: color[type], data: { id: sorted_nodes[k][i], type: type } })
+                graph.nodes.push({ id: type + sorted_nodes[k][i], text: sorted_nodes[k][i], color: community_color[k], data: { id: sorted_nodes[k][i], type: type } })
                 for (var j = i + 1; j < sorted_nodes[k].length; j++) {
                     var res = await Path.findOne({ where: { patient1: sorted_nodes[k][i], patient2: sorted_nodes[k][j], step: 'step1' }, raw: true }) //有一阶关系才连线
                     console.log('一接关系查询结果', res)
@@ -433,28 +436,74 @@ class AlgorithmController {
         }
     }
     async fetchData(ctx, next) {
-        const { id, text, type } = ctx.request.body
-        console.log(id, text, type)
+        const { id, name, type } = ctx.request.body
+        console.log(id, name, type)
+        var res = null
         var record = null
+        var graph = {
+                rootId: '',
+                nodes: [],
+                links: []
+            }
             // 2. 操作数据库
+        var color = { 'root': '#F56C6C', 'PATIENT_ID': '#67C23A', 'HOSPITAL_ID': '#43a2f1', 'PHYSICIAN_ID': '#E6A23C', 'DEPT_ID': '#909399' }
         if (id !== '') {
-            record = await Record.findAll({ where: { DEPT_ID: id } })
-
-        } else if (text !== '') {
-            record = await Record.findAll({ where: { DEPT_text: text } })
+            //有id就直接查id
+            if (type === 'PATIENT_ID') {
+                res = await Patient.findAll({ where: { id: id }, raw: true })
+                record = await Record.findAll({ where: { PATIENT_ID: id }, raw: true })
+            } else if (type === 'PHYSICIAN_ID') {
+                res = await Physician.findAll({ where: { id: id }, raw: true })
+                record = await Record.findAll({ where: { PHYSICIAN_ID: id }, raw: true })
+            } else if (type === 'HOSPITAL_ID') {
+                res = await Hospital.findAll({ where: { id: id }, raw: true })
+                record = await Record.findAll({ where: { HOSPITAL_ID: id }, raw: true })
+            } else {
+                res = await Dept.findAll({ where: { id: id }, raw: true })
+                record = await Record.findAll({ where: { DEPT_ID: id }, raw: true })
+            }
+        } else if (name !== '') {
+            if (type === 'PATIENT_ID') {
+                res = await Patient.findAll({ where: { name: name }, raw: true })
+                record = await Record.findAll({ where: { PATIENT_NAME: name }, raw: true })
+            } else if (type === 'PHYSICIAN_ID') {
+                res = await Physician.findAll({ where: { doctor_name: name }, raw: true })
+                record = await Record.findAll({ where: { PHYSICIAN_NAME: name }, raw: true })
+            } else if (type === 'HOSPITAL_ID') {
+                res = await Hospital.findAll({ where: { name: name }, raw: true })
+                record = await Record.findAll({ where: { HOSPITAL_NAME: name }, raw: true })
+            } else {
+                res = await Dept.findAll({ where: { name: name }, raw: true })
+                record = await Record.findAll({ where: { DEPT_NAME: name }, raw: true })
+            }
         } else {
-            record = await Record.findAll()
+            if (type === 'PATIENT_ID') {
+                res = await Patient.findAll({ raw: true })
+            } else if (type === 'PHYSICIAN_ID') {
+                res = await Physician.findAll({ raw: true })
+            } else if (type === 'HOSPITAL_ID') {
+                res = await Hospital.findAll({ raw: true })
+            } else {
+                res = await Dept.findAll({ raw: true })
+            }
+            record = await Record.findAll({ raw: true })
+        }
+        graph.rootId = type + res[0]['id']
+        for (var i = 0; i < record.length; i++) {
+            graph.nodes.push({ id: type + record[i][type], text: record[i][type], color: color[type], data: { id: record[i][type], type: type } })
         }
         // const res = await User.findAll()
         // console.log(res)
         // 3. 返回结果
+        console.log(res)
         if (record) {
             ctx.body = {
                 code: 0,
                 message: "数据查询成功",
                 data: {
-                    nodeData: null,
-                    recordData: record
+                    nodeData: res,
+                    recordData: record,
+                    graphData: graph
                 },
             }
         }
